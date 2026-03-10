@@ -1,27 +1,33 @@
 import aiosqlite
-import os
+from contextlib import asynccontextmanager
+from collections.abc import AsyncIterator
 from pathlib import Path
 
-DB_PATH = os.environ.get("FEEDPULSE_DB_PATH", "data/feedpulse.db")
+from feedpulse.config import settings
 
 
-async def get_db() -> aiosqlite.Connection:
-    Path(DB_PATH).parent.mkdir(parents=True, exist_ok=True)
-    db = await aiosqlite.connect(DB_PATH)
+@asynccontextmanager
+async def get_db() -> AsyncIterator[aiosqlite.Connection]:
+    """Context manager for database connections with proper cleanup."""
+    Path(settings.db_path).parent.mkdir(parents=True, exist_ok=True)
+    db = await aiosqlite.connect(settings.db_path)
     db.row_factory = aiosqlite.Row
-    return db
+    await db.execute("PRAGMA foreign_keys = ON")
+    await db.execute("PRAGMA journal_mode = WAL")
+    try:
+        yield db
+    finally:
+        await db.close()
 
 
 async def init_db() -> None:
-    db = await get_db()
-    try:
+    async with get_db() as db:
         await db.executescript("""
             CREATE TABLE IF NOT EXISTS feeds (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 url TEXT NOT NULL UNIQUE,
                 title TEXT,
                 last_checked_at TEXT,
-                last_entry_id TEXT,
                 created_at TEXT DEFAULT (datetime('now'))
             );
 
@@ -48,5 +54,3 @@ async def init_db() -> None:
             );
         """)
         await db.commit()
-    finally:
-        await db.close()

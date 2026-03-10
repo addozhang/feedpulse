@@ -2,10 +2,11 @@ FROM python:3.12-slim
 
 WORKDIR /app
 
+# Copy source first (needed for pip install)
 COPY pyproject.toml .
-RUN pip install --no-cache-dir .
-
 COPY feedpulse/ feedpulse/
+
+RUN pip install --no-cache-dir .
 
 RUN mkdir -p /app/data
 

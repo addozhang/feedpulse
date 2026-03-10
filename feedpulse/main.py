@@ -19,9 +19,7 @@ def main() -> None:
         raise SystemExit(1)
 
     # Init DB
-    asyncio.get_event_loop_policy()
-    loop = asyncio.new_event_loop()
-    loop.run_until_complete(init_db())
+    asyncio.run(init_db())
 
     # Create bot
     app = create_bot()
@@ -29,7 +27,6 @@ def main() -> None:
     # Setup scheduler
     scheduler = setup_scheduler(app.bot)
 
-    # Start scheduler when bot starts
     async def post_init(application) -> None:
         scheduler.start()
         logger.info(f"Scheduler started, polling every {settings.poll_interval_minutes} minutes")

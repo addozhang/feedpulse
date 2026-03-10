@@ -1,4 +1,5 @@
 import logging
+import sqlite3
 
 from telegram import Update
 from telegram.ext import (
@@ -34,8 +35,7 @@ async def cmd_add(update: Update, ctx: ContextTypes.DEFAULT_TYPE) -> None:
     chat_id = update.effective_chat.id
     chat_type = update.effective_chat.type
 
-    # Validate feed
-    msg = await update.message.reply_text(f"⏳ 正在验证 feed...")
+    msg = await update.message.reply_text("⏳ 正在验证 feed...")
     try:
         parsed = await fetch_feed(url)
         if parsed.bozo and not parsed.entries:
@@ -47,9 +47,7 @@ async def cmd_add(update: Update, ctx: ContextTypes.DEFAULT_TYPE) -> None:
 
     feed_title = parsed.feed.get("title", url)
 
-    db = await get_db()
-    try:
-        # Upsert feed
+    async with get_db() as db:
         await db.execute(
             "INSERT OR IGNORE INTO feeds (url, title) VALUES (?, ?)",
             (url, feed_title),
@@ -58,7 +56,6 @@ async def cmd_add(update: Update, ctx: ContextTypes.DEFAULT_TYPE) -> None:
         feed = await cursor.fetchone()
         feed_id = feed["id"]
 
-        # Add subscription
         try:
             await db.execute(
                 "INSERT INTO subscriptions (feed_id, chat_id, chat_type) VALUES (?, ?, ?)",
@@ -66,16 +63,13 @@ async def cmd_add(update: Update, ctx: ContextTypes.DEFAULT_TYPE) -> None:
             )
             await db.commit()
             await msg.edit_text(f"✅ 已订阅: {feed_title}\nID: {feed_id}")
-        except Exception:
+        except sqlite3.IntegrityError:
             await msg.edit_text(f"⚠️ 已经订阅过了: {feed_title}")
-    finally:
-        await db.close()
 
 
 async def cmd_list(update: Update, ctx: ContextTypes.DEFAULT_TYPE) -> None:
     chat_id = update.effective_chat.id
-    db = await get_db()
-    try:
+    async with get_db() as db:
         cursor = await db.execute(
             """
             SELECT f.id, f.title, f.url, f.last_checked_at
@@ -87,8 +81,6 @@ async def cmd_list(update: Update, ctx: ContextTypes.DEFAULT_TYPE) -> None:
             (chat_id,),
         )
         feeds = await cursor.fetchall()
-    finally:
-        await db.close()
 
     if not feeds:
         await update.message.reply_text("📭 没有订阅")
@@ -113,8 +105,7 @@ async def cmd_remove(update: Update, ctx: ContextTypes.DEFAULT_TYPE) -> None:
         return
 
     chat_id = update.effective_chat.id
-    db = await get_db()
-    try:
+    async with get_db() as db:
         cursor = await db.execute(
             "DELETE FROM subscriptions WHERE feed_id = ? AND chat_id = ?",
             (feed_id, chat_id),
@@ -132,16 +123,15 @@ async def cmd_remove(update: Update, ctx: ContextTypes.DEFAULT_TYPE) -> None:
             await update.message.reply_text(f"✅ 已取消订阅 ID: {feed_id}")
         else:
             await update.message.reply_text(f"❌ 未找到订阅 ID: {feed_id}")
-    finally:
-        await db.close()
 
 
 async def cmd_check(update: Update, ctx: ContextTypes.DEFAULT_TYPE) -> None:
-    """Manually trigger a check for the current chat's subscriptions."""
+    """Manually trigger a check for the current chat's subscriptions only."""
     from feedpulse.scheduler import notify_subscribers
 
+    chat_id = update.effective_chat.id
     await update.message.reply_text("🔍 正在检查更新...")
-    count = await notify_subscribers(ctx.bot)
+    count = await notify_subscribers(ctx.bot, chat_id=chat_id)
     await update.message.reply_text(f"✅ 检查完成，推送了 {count} 条新内容")
 
 
