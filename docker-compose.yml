@@ -5,7 +5,8 @@ services:
     restart: unless-stopped
     environment:
       - FEEDPULSE_TELEGRAM_BOT_TOKEN=${FEEDPULSE_TELEGRAM_BOT_TOKEN}
-      - FEEDPULSE_POLL_INTERVAL_MINUTES=10
+      - FEEDPULSE_POLL_INTERVAL_MINUTES=${FEEDPULSE_POLL_INTERVAL_MINUTES:-10}
+      - FEEDPULSE_INITIAL_FETCH_LIMIT=${FEEDPULSE_INITIAL_FETCH_LIMIT:-5}
     volumes:
       - feedpulse-data:/app/data
 
