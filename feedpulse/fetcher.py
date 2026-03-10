@@ -13,7 +13,10 @@ logger = logging.getLogger(__name__)
 
 async def fetch_feed(url: str) -> feedparser.FeedParserDict:
     """Fetch and parse a feed URL."""
-    async with aiohttp.ClientSession() as session:
+    headers = {
+        "User-Agent": "Mozilla/5.0 (compatible; FeedPulse/0.1; +https://github.com/addozhang/feedpulse)",
+    }
+    async with aiohttp.ClientSession(headers=headers) as session:
         async with session.get(url, timeout=aiohttp.ClientTimeout(total=30)) as resp:
             if resp.status >= 400:
                 raise aiohttp.ClientResponseError(
