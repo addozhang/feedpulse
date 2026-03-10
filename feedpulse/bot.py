@@ -66,11 +66,25 @@ async def cmd_add(update: Update, ctx: ContextTypes.DEFAULT_TYPE) -> None:
             await msg.edit_text(f"⚠️ 已经订阅过了: {feed_title}")
             return
 
-    # Seed existing entries so they won't be pushed as new
+    # Seed entries and push recent ones to subscriber
     seeded = await seed_feed_entries(feed_id, parsed)
-    await msg.edit_text(
-        f"✅ 已订阅: {feed_title}\nID: {feed_id}\n已记录最近 {seeded} 条，后续只推新内容"
-    )
+    await msg.edit_text(f"✅ 已订阅: {feed_title}\nID: {feed_id}")
+
+    # Push the seeded entries to this chat
+    from feedpulse.scheduler import _build_message
+    limit = settings.initial_fetch_limit
+    entries = parsed.entries[:limit] if limit > 0 else parsed.entries
+    for entry in entries:
+        title = entry.get("title", "No title")
+        link = entry.get("link", "")
+        text = _build_message(feed_title, {"title": title, "link": link})
+        try:
+            await ctx.bot.send_message(
+                chat_id=chat_id, text=text, parse_mode="HTML",
+                disable_web_page_preview=True,
+            )
+        except Exception as e:
+            logger.error(f"Failed to send initial entry: {e}")
 
 
 async def cmd_list(update: Update, ctx: ContextTypes.DEFAULT_TYPE) -> None:
