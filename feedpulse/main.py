@@ -30,11 +30,11 @@ def main() -> None:
     async def post_init(application) -> None:
         # Register bot commands for the "/" menu
         await application.bot.set_my_commands([
-            ("start", "查看帮助"),
-            ("add", "添加 RSS 订阅"),
-            ("list", "查看订阅列表"),
-            ("remove", "取消订阅"),
-            ("check", "立即检查更新"),
+            ("start", "Show help"),
+            ("add", "Subscribe to an RSS feed"),
+            ("list", "List subscriptions"),
+            ("remove", "Unsubscribe"),
+            ("check", "Check for updates now"),
         ])
         scheduler.start()
         logger.info(f"Scheduler started, polling every {settings.poll_interval_minutes} minutes")
