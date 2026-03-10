@@ -150,6 +150,33 @@ async def cmd_check(update: Update, ctx: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text(msg["check_done"].format(count=count))
 
 
+async def cmd_info(update: Update, ctx: ContextTypes.DEFAULT_TYPE) -> None:
+    """Show chat info including chat_id, type, and subscription stats."""
+    chat_id = update.effective_chat.id
+    chat_type = update.effective_chat.type
+    async with get_db() as db:
+        cursor = await db.execute(
+            "SELECT COUNT(*) as cnt FROM subscriptions WHERE chat_id = ?", (chat_id,)
+        )
+        sub_count = (await cursor.fetchone())["cnt"]
+        cursor2 = await db.execute(
+            """
+            SELECT COUNT(*) as cnt FROM entries e
+            JOIN subscriptions s ON s.feed_id = e.feed_id
+            WHERE s.chat_id = ?
+            """,
+            (chat_id,),
+        )
+        entry_count = (await cursor2.fetchone())["cnt"]
+    await update.message.reply_text(
+        msg["info"].format(
+            chat_id=chat_id, chat_type=chat_type,
+            sub_count=sub_count, entry_count=entry_count,
+        ),
+        parse_mode="HTML",
+    )
+
+
 def create_bot() -> Application:
     app = Application.builder().token(settings.telegram_bot_token).build()
     app.add_handler(CommandHandler("start", cmd_start))
@@ -158,4 +185,5 @@ def create_bot() -> Application:
     app.add_handler(CommandHandler("list", cmd_list))
     app.add_handler(CommandHandler("remove", cmd_remove))
     app.add_handler(CommandHandler("check", cmd_check))
+    app.add_handler(CommandHandler("info", cmd_info))
     return app

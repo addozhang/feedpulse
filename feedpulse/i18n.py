@@ -29,6 +29,14 @@ MESSAGES = {
         "cmd_list": "List subscriptions",
         "cmd_remove": "Unsubscribe",
         "cmd_check": "Check for updates now",
+        "cmd_info": "Show chat info",
+        "info": (
+            "ℹ️ Chat Info\n\n"
+            "Chat ID: <code>{chat_id}</code>\n"
+            "Chat Type: {chat_type}\n"
+            "Subscriptions: {sub_count}\n"
+            "Total Entries: {entry_count}"
+        ),
     },
     "zh": {
         "help": (
@@ -58,6 +66,14 @@ MESSAGES = {
         "cmd_list": "查看订阅列表",
         "cmd_remove": "取消订阅",
         "cmd_check": "立即检查更新",
+        "cmd_info": "查看聊天信息",
+        "info": (
+            "ℹ️ 聊天信息\n\n"
+            "Chat ID: <code>{chat_id}</code>\n"
+            "聊天类型: {chat_type}\n"
+            "订阅数: {sub_count}\n"
+            "文章总数: {entry_count}"
+        ),
     },
 }
 
