@@ -10,8 +10,8 @@ services:
       - FEEDPULSE_LANGUAGE=${FEEDPULSE_LANGUAGE:-en}
       - FEEDPULSE_API_ENABLED=${FEEDPULSE_API_ENABLED:-true}
       - FEEDPULSE_API_PORT=${FEEDPULSE_API_PORT:-8000}
-    ports:
-      - "${FEEDPULSE_API_PORT:-8000}:${FEEDPULSE_API_PORT:-8000}"
+    # ports:
+    #   - "${FEEDPULSE_API_PORT:-8000}:${FEEDPULSE_API_PORT:-8000}"
     volumes:
       - feedpulse-data:/app/data
 
