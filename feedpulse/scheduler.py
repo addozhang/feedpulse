@@ -55,7 +55,7 @@ async def notify_subscribers(
                             chat_id=sub["chat_id"],
                             text=text,
                             parse_mode="HTML",
-                            disable_web_page_preview=False,
+                            disable_web_page_preview=True,
                         )
                         total += 1
                     except Exception as e:

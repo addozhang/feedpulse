@@ -10,7 +10,7 @@ from telegram.ext import (
 
 from feedpulse.config import settings
 from feedpulse.db import get_db
-from feedpulse.fetcher import fetch_feed
+from feedpulse.fetcher import fetch_feed, seed_feed_entries
 
 logger = logging.getLogger(__name__)
 
@@ -62,9 +62,15 @@ async def cmd_add(update: Update, ctx: ContextTypes.DEFAULT_TYPE) -> None:
                 (feed_id, chat_id, chat_type),
             )
             await db.commit()
-            await msg.edit_text(f"✅ 已订阅: {feed_title}\nID: {feed_id}")
         except sqlite3.IntegrityError:
             await msg.edit_text(f"⚠️ 已经订阅过了: {feed_title}")
+            return
+
+    # Seed existing entries so they won't be pushed as new
+    seeded = await seed_feed_entries(feed_id, parsed)
+    await msg.edit_text(
+        f"✅ 已订阅: {feed_title}\nID: {feed_id}\n已记录最近 {seeded} 条，后续只推新内容"
+    )
 
 
 async def cmd_list(update: Update, ctx: ContextTypes.DEFAULT_TYPE) -> None:

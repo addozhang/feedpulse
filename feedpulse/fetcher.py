@@ -74,6 +74,31 @@ async def check_feed_updates(feed_id: int, url: str) -> list[dict]:
     return new_entries
 
 
+async def seed_feed_entries(feed_id: int, parsed: feedparser.FeedParserDict) -> int:
+    """Pre-populate entries for a newly added feed so they won't be pushed as new.
+    Returns number of entries seeded."""
+    limit = settings.initial_fetch_limit
+    entries = parsed.entries[:limit] if limit > 0 else parsed.entries
+    count = 0
+    async with get_db() as db:
+        for entry in entries:
+            entry_id = entry.get("id") or entry.get("link") or entry.get("title", "")
+            if not entry_id:
+                continue
+            published = entry.get("published") or entry.get("updated") or ""
+            title = entry.get("title", "No title")
+            link = entry.get("link", "")
+            await db.execute(
+                "INSERT OR IGNORE INTO entries (feed_id, entry_id, title, link, published_at) VALUES (?, ?, ?, ?, ?)",
+                (feed_id, entry_id, title, link, published),
+            )
+            count += 1
+        now = datetime.now(timezone.utc).isoformat()
+        await db.execute("UPDATE feeds SET last_checked_at = ? WHERE id = ?", (now, feed_id))
+        await db.commit()
+    return count
+
+
 async def check_all_feeds(
     chat_id: int | None = None,
 ) -> dict[int, list[dict]]:

@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     poll_interval_minutes: int = 10
     log_level: str = "INFO"
     max_concurrent_feeds: int = 10
+    initial_fetch_limit: int = 5
 
     model_config = {"env_prefix": "FEEDPULSE_"}
 
