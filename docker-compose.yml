@@ -1,0 +1,13 @@
+services:
+  feedpulse:
+    build: .
+    container_name: feedpulse
+    restart: unless-stopped
+    environment:
+      - FEEDPULSE_TELEGRAM_BOT_TOKEN=${FEEDPULSE_TELEGRAM_BOT_TOKEN}
+      - FEEDPULSE_POLL_INTERVAL_MINUTES=10
+    volumes:
+      - feedpulse-data:/app/data
+
+volumes:
+  feedpulse-data:

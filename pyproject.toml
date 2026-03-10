@@ -1,0 +1,20 @@
+[project]
+name = "feedpulse"
+version = "0.1.0"
+description = "Self-hosted RSS/Feed reader with Telegram Bot integration"
+requires-python = ">=3.11"
+dependencies = [
+    "feedparser>=6.0",
+    "python-telegram-bot>=21.0",
+    "aiohttp>=3.9",
+    "aiosqlite>=0.20",
+    "apscheduler>=3.10,<4.0",
+    "pydantic>=2.0",
+    "pydantic-settings>=2.0",
+]
+
+[project.optional-dependencies]
+dev = ["ruff", "pytest", "pytest-asyncio"]
+
+[tool.ruff]
+line-length = 100
