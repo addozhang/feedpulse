@@ -29,12 +29,14 @@ def main() -> None:
 
     async def post_init(application) -> None:
         # Register bot commands for the "/" menu
+        from feedpulse.i18n import get_messages
+        msg = get_messages(settings.language)
         await application.bot.set_my_commands([
-            ("start", "Show help"),
-            ("add", "Subscribe to an RSS feed"),
-            ("list", "List subscriptions"),
-            ("remove", "Unsubscribe"),
-            ("check", "Check for updates now"),
+            ("start", msg["cmd_start"]),
+            ("add", msg["cmd_add"]),
+            ("list", msg["cmd_list"]),
+            ("remove", msg["cmd_remove"]),
+            ("check", msg["cmd_check"]),
         ])
         scheduler.start()
         logger.info(f"Scheduler started, polling every {settings.poll_interval_minutes} minutes")

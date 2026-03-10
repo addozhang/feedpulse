@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     log_level: str = "INFO"
     max_concurrent_feeds: int = 10
     initial_fetch_limit: int = 5
+    language: str = "en"
 
     model_config = {"env_prefix": "FEEDPULSE_"}
 
