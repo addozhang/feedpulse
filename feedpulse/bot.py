@@ -132,6 +132,7 @@ async def cmd_remove(update: Update, ctx: ContextTypes.DEFAULT_TYPE) -> None:
             )
             row = await cursor2.fetchone()
             if row["cnt"] == 0:
+                await db.execute("DELETE FROM entries WHERE feed_id = ?", (feed_id,))
                 await db.execute("DELETE FROM feeds WHERE id = ?", (feed_id,))
                 await db.commit()
             await update.message.reply_text(msg["unsubscribed"].format(feed_id=feed_id))
