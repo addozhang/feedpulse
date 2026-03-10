@@ -11,6 +11,8 @@ class Settings(BaseSettings):
     max_concurrent_feeds: int = 10
     initial_fetch_limit: int = 5
     language: str = "en"
+    api_enabled: bool = True
+    api_port: int = 8000
 
     model_config = {"env_prefix": "FEEDPULSE_"}
 

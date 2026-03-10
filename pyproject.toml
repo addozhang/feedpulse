@@ -11,6 +11,8 @@ dependencies = [
     "apscheduler>=3.10,<4.0",
     "pydantic>=2.0",
     "pydantic-settings>=2.0",
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.34",
 ]
 
 [project.optional-dependencies]
@@ -18,3 +20,6 @@ dev = ["ruff", "pytest", "pytest-asyncio"]
 
 [tool.ruff]
 line-length = 100
+
+[tool.setuptools.packages.find]
+include = ["feedpulse*"]
