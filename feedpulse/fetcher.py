@@ -75,13 +75,11 @@ async def check_feed_updates(feed_id: int, url: str) -> list[dict]:
 
 
 async def seed_feed_entries(feed_id: int, parsed: feedparser.FeedParserDict) -> int:
-    """Pre-populate entries for a newly added feed so they won't be pushed as new.
+    """Pre-populate ALL entries for a newly added feed so they won't be pushed as new.
     Returns number of entries seeded."""
-    limit = settings.initial_fetch_limit
-    entries = parsed.entries[:limit] if limit > 0 else parsed.entries
     count = 0
     async with get_db() as db:
-        for entry in entries:
+        for entry in parsed.entries:
             entry_id = entry.get("id") or entry.get("link") or entry.get("title", "")
             if not entry_id:
                 continue
