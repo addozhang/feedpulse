@@ -3,6 +3,7 @@ import logging
 from datetime import datetime, timezone
 
 import aiohttp
+
 import feedparser
 
 from feedpulse.config import settings
@@ -48,13 +49,6 @@ async def check_feed_updates(feed_id: int, url: str) -> list[dict]:
                 (parsed.feed.title, feed_id),
             )
 
-        # Get last_checked_at for time-based filtering
-        cursor = await db.execute(
-            "SELECT last_checked_at FROM feeds WHERE id = ?", (feed_id,)
-        )
-        row = await cursor.fetchone()
-        last_checked = row["last_checked_at"] if row else None
-
         for entry in parsed.entries:
             entry_id = entry.get("id") or entry.get("link") or entry.get("title", "")
             if not entry_id:
@@ -62,22 +56,9 @@ async def check_feed_updates(feed_id: int, url: str) -> list[dict]:
 
             published = entry.get("published") or entry.get("updated") or ""
 
-            # Time-based filter: skip entries older than last check
-            if last_checked and published:
-                from email.utils import parsedate_to_datetime
-                try:
-                    pub_dt = parsedate_to_datetime(published)
-                    check_dt = datetime.fromisoformat(last_checked)
-                    if pub_dt.tzinfo is None:
-                        pub_dt = pub_dt.replace(tzinfo=timezone.utc)
-                    if check_dt.tzinfo is None:
-                        check_dt = check_dt.replace(tzinfo=timezone.utc)
-                    if pub_dt <= check_dt:
-                        continue
-                except (ValueError, TypeError):
-                    pass  # Fall through to entry_id dedup
-
-            # Fallback: entry_id dedup for entries without valid timestamps
+            # Use entry_id dedup only — time-based filtering is unreliable because
+            # some feeds (e.g. HN points-filtered) surface articles long after their
+            # original publish date, causing newer entries to be silently skipped.
             cursor = await db.execute(
                 "SELECT id FROM entries WHERE feed_id = ? AND entry_id = ?",
                 (feed_id, entry_id),
