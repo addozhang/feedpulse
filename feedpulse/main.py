@@ -4,14 +4,12 @@ import logging
 from feedpulse.config import settings
 from feedpulse.db import init_db
 from feedpulse.bot import create_bot
+from feedpulse.logging import configure_logging
 from feedpulse.scheduler import setup_scheduler
 
 
 def main() -> None:
-    logging.basicConfig(
-        level=getattr(logging, settings.log_level.upper()),
-        format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-    )
+    configure_logging(settings.log_level, settings.telegram_bot_token)
     logger = logging.getLogger(__name__)
 
     if not settings.telegram_bot_token:
