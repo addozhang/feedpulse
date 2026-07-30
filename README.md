@@ -9,6 +9,7 @@ Self-hosted RSS/Feed subscription service with Telegram Bot integration.
 - Push new articles to Telegram (private chat, group, or channel)
 - SQLite storage, lightweight deployment
 - Configurable initial fetch limit on subscribe
+- OPML import and export
 
 ## Quick Start
 
@@ -37,6 +38,8 @@ python -m feedpulse.main
 | `/list` | List current subscriptions |
 | `/remove <id>` | Unsubscribe |
 | `/check` | Check for updates now |
+| `/export` | Export current subscriptions as OPML |
+| `/import` | Import an attached or replied-to OPML file |
 
 ## Configuration
 
@@ -55,4 +58,3 @@ python -m feedpulse.main
 - [ ] WebSub support
 - [ ] Feed grouping / tags
 - [ ] Full-text fetching
-- [ ] OPML import/export

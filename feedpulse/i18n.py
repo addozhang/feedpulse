@@ -8,7 +8,9 @@ MESSAGES = {
             "/add <url> — Subscribe to a feed\n"
             "/list — List subscriptions\n"
             "/remove <id> — Unsubscribe\n"
-            "/check — Check for updates now"
+            "/check — Check for updates now\n"
+            "/export — Export subscriptions as OPML\n"
+            "/import — Import an attached or replied-to OPML file"
         ),
         "add_usage": "Usage: /add <feed_url>",
         "validating": "⏳ Validating feed...",
@@ -30,6 +32,16 @@ MESSAGES = {
         "cmd_remove": "Unsubscribe",
         "cmd_check": "Check for updates now",
         "cmd_info": "Show chat info",
+        "cmd_export": "Export subscriptions as OPML",
+        "cmd_import": "Import subscriptions from OPML",
+        "export_done": "Exported {count} subscriptions.",
+        "import_usage": "Attach an OPML file with /import, or reply to one with /import.",
+        "import_too_large": "❌ OPML file must be 1 MB or smaller.",
+        "importing": "⏳ Importing subscriptions...",
+        "import_invalid": "❌ Invalid OPML file: {error}",
+        "import_download_failed": "❌ Failed to download OPML file: {error}",
+        "import_empty": "📭 No feeds found in the OPML file.",
+        "import_done": "✅ Import complete. Added: {added}, skipped: {skipped}, failed: {failed}.",
         "info": (
             "ℹ️ Chat Info\n\n"
             "Chat ID: <code>{chat_id}</code>\n"
@@ -45,7 +57,9 @@ MESSAGES = {
             "/add <url> — 添加订阅\n"
             "/list — 查看订阅列表\n"
             "/remove <id> — 删除订阅\n"
-            "/check — 立即检查更新"
+            "/check — 立即检查更新\n"
+            "/export — 导出 OPML 订阅\n"
+            "/import — 导入附带或回复的 OPML 文件"
         ),
         "add_usage": "用法: /add <feed_url>",
         "validating": "⏳ 正在验证 feed...",
@@ -67,6 +81,16 @@ MESSAGES = {
         "cmd_remove": "取消订阅",
         "cmd_check": "立即检查更新",
         "cmd_info": "查看聊天信息",
+        "cmd_export": "导出 OPML 订阅",
+        "cmd_import": "从 OPML 导入订阅",
+        "export_done": "已导出 {count} 个订阅。",
+        "import_usage": "请在 /import 消息中附带 OPML 文件，或回复 OPML 文件发送 /import。",
+        "import_too_large": "❌ OPML 文件不能超过 1 MB。",
+        "importing": "⏳ 正在导入订阅...",
+        "import_invalid": "❌ OPML 文件无效: {error}",
+        "import_download_failed": "❌ 下载 OPML 文件失败: {error}",
+        "import_empty": "📭 OPML 文件中没有 Feed。",
+        "import_done": "✅ 导入完成。新增: {added}，跳过: {skipped}，失败: {failed}。",
         "info": (
             "ℹ️ 聊天信息\n\n"
             "Chat ID: <code>{chat_id}</code>\n"

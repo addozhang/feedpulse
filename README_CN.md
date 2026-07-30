@@ -8,6 +8,7 @@ Self-hosted RSS/Feed 订阅推送，通过 Telegram Bot 管理和接收更新。
 - 定时轮询（默认 10 分钟）检测新内容
 - 新文章自动推送到 Telegram（私聊、群组、频道均支持）
 - SQLite 持久化，轻量部署
+- OPML 导入导出
 
 ## 快速开始
 
@@ -36,6 +37,8 @@ python -m feedpulse.main
 | `/list` | 查看当前订阅 |
 | `/remove <id>` | 取消订阅 |
 | `/check` | 立即检查更新 |
+| `/export` | 将当前订阅导出为 OPML |
+| `/import` | 导入附带或回复的 OPML 文件 |
 
 ## 配置
 
@@ -52,4 +55,3 @@ python -m feedpulse.main
 - [ ] WebSub 支持
 - [ ] Feed 分组/标签
 - [ ] 全文抓取
-- [ ] OPML 导入导出

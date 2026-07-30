@@ -42,6 +42,8 @@ def _run_bot_only(logger: logging.Logger) -> None:
             ("remove", msg["cmd_remove"]),
             ("check", msg["cmd_check"]),
             ("info", msg["cmd_info"]),
+            ("export", msg["cmd_export"]),
+            ("import", msg["cmd_import"]),
         ])
         scheduler.start()
         logger.info(f"Scheduler started, polling every {settings.poll_interval_minutes} minutes")
@@ -74,7 +76,9 @@ async def _run_with_api(logger: logging.Logger) -> None:
         ("list", msg["cmd_list"]),
         ("remove", msg["cmd_remove"]),
         ("check", msg["cmd_check"]),
-            ("info", msg["cmd_info"]),
+        ("info", msg["cmd_info"]),
+        ("export", msg["cmd_export"]),
+        ("import", msg["cmd_import"]),
     ])
     await bot_app.start()
     await bot_app.updater.start_polling()
