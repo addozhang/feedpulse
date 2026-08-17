@@ -8,6 +8,8 @@ from telegram.ext import (
     Application,
     CommandHandler,
     ContextTypes,
+    MessageHandler,
+    filters,
 )
 
 from feedpulse.config import settings
@@ -289,4 +291,12 @@ def create_bot() -> Application:
     app.add_handler(CommandHandler("info", cmd_info))
     app.add_handler(CommandHandler("export", cmd_export))
     app.add_handler(CommandHandler("import", cmd_import))
+    # Telegram 把「命令 + 附件」的命令文本放在 caption 而非 text，
+    # CommandHandler 不解析 caption，需单独注册文档消息处理。
+    app.add_handler(
+        MessageHandler(
+            filters.Document.ALL & filters.CaptionRegex(r"^/import(?:@\w+)?(?:\s|$)"),
+            cmd_import,
+        )
+    )
     return app
